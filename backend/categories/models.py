@@ -1,7 +1,8 @@
 from sqlalchemy import(
     ForeignKey,
     String,
-    Integer
+    Integer,
+    Boolean
 )
 from sqlalchemy.orm import(
     Mapped,
@@ -36,6 +37,12 @@ class CategoriesModel(Base):
     description: Mapped[str] = mapped_column(
         String(250),
         nullable=True
+    )
+    
+    is_system : Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False
     )
 
     parent: Mapped["CategoriesModel"] = relationship(
