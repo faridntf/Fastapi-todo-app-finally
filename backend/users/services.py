@@ -3,11 +3,14 @@ from sqlalchemy.orm import Session
 from sqlalchemy import exists,or_,and_
 from .models import UserModel
 from pydantic import EmailStr
-from jwt import ExpiredSignatureError,InvalidTokenError
+from fastapi.security import APIKeyCookie
 from auth.jwt_auth import decode_token
 from core import get_db
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
+cookie_api = APIKeyCookie(
+    name="access_token"
+)
 
 def check_duplicate_account(
     username: str | None,
@@ -67,7 +70,7 @@ def find_user_by_id(data : int, db : Session) -> str:
 
 
 def get_current_user(
-    token: str | None = Cookie(default=None, alias="access_token"),
+    token = Depends(cookie_api),
     db: Session = Depends(get_db),
 ):
 
