@@ -53,7 +53,6 @@ class CategoryUpdateSc(BaseModel):
     
     parent_id : Optional[int] = Field(
         default=None,
-        pattern="[0-9]+"
     )
     
     description : Optional[str] = Field(

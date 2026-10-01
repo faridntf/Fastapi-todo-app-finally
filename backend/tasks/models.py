@@ -92,7 +92,7 @@ class TaskModel(Base):
     
     category = relationship(
         "CategoriesModel",
-        backref="categorys",
+        back_populates="tasks",
         uselist=False
     )
     

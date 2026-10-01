@@ -56,6 +56,12 @@ class CategoriesModel(Base):
         back_populates="parent",
     )
     
+    
+    tasks = relationship(
+            "TaskModel",
+            back_populates="category",
+        )
+    
     def __str__(self) -> str:
         return {
             "id" : self.id,
