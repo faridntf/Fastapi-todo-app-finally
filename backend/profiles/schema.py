@@ -98,9 +98,4 @@ class ProfileUpdateSc(ProfileBaseSc):
     pass
     
 class ProfileResponseSc(ProfileBaseSc):
-    
-    user_id_fk : int
-    
-    model_config = ConfigDict(
-        from_attributes=True,
-    )
+    pass

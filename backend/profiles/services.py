@@ -5,8 +5,10 @@ from fastapi import(
 )
 
 from sqlalchemy.orm import Session
+from sqlalchemy import exists,or_,update
 from core import get_db
 from .models import ProfileModel
+from users import UserModel,EnUserRole
 from io import BytesIO
 from core.setting import BASE_DIR
 from uuid import uuid4
@@ -22,8 +24,20 @@ ALLOWED_FORMATS = {
     ".png": "PNG",
 }
 
+def get_profile_db(db: Session, user_id: int):
+    profile = db.query(ProfileModel).where(
+        ProfileModel.user_id_fk == user_id
+    ).one_or_none()
+    if profile is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Profile not found",
+        )
+    return profile
+
 def upload_avatar(
-    data,current_user_id
+    data,
+    current_user_id
 ):
     try:
         extension = Path(data.filename or "").suffix.lower()
@@ -93,7 +107,7 @@ def upload_avatar(
                 status_code=500,
                 detail="Internal Server Error, please Try again.",
             )
-        return destination
+        return filename
     finally:
         data.file.close()
 
@@ -102,35 +116,41 @@ def delete_old_profile_avatar(
 )-> None:
     upload_dir = (BASE_DIR.parent.parent / "uploads" / "profiles").resolve()
     if old_data:
-        old_path = (BASE_DIR.parent.parent / old_data).resolve()
+        old_path = (BASE_DIR.parent.parent /"uploads"/"profiles"/ old_data).resolve()
         if (old_path.is_relative_to(upload_dir) and old_path.is_file()):
             old_path.unlink(missing_ok=True)
 
-def duplicate_data_NID(
-    data: str | None,
-    db: Session,
-    exclude_profile_id: int | None = None,
-):
-    if data is None:
-        return
-    query = db.query(ProfileModel).filter(ProfileModel.national_id == data)
-    if exclude_profile_id is not None:
-        query = query.filter(ProfileModel.id != exclude_profile_id)
-    national_id_exist = query.one_or_none()
+def check_nationalID(data,db:Session):
+    return db.query(
+        exists().where(
+            ProfileModel.national_id == data,
+        )
+    ).scalar()
     
-    if national_id_exist:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="National id already exist, please try again"
-            )
-        
-def duplicate_data_UID(
-    data : int,
-    db : Session
+def check_userID(data,db:Session):
+    return db.query(
+        exists().where(
+            ProfileModel.user_id_fk == data
+        )
+    ).scalar()
+    
+def change_profile_status(
+    user_id: int,
+    is_completed: bool,
+    db: Session,
 ):
-    user_id_exist = db.query(ProfileModel).filter(ProfileModel.user_id_fk == data).one_or_none()
-    if user_id_exist:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="your profile has been set!, please update your information."
-            )
+    db.execute(
+        update(UserModel)
+        .where(
+            UserModel.id == user_id,
+            UserModel.role.in_([
+                EnUserRole.GUEST,
+                EnUserRole.USER,
+            ]),
+        )
+        .values(
+            is_profile_completed=is_completed,
+            role=EnUserRole.USER if is_completed else EnUserRole.GUEST,
+        )
+            
+    )

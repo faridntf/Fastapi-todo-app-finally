@@ -82,7 +82,6 @@ def login_account(response: Response,login_data: OAuth2PasswordRequestForm = Dep
     refresh_token = create_refresh_token(user.id)
     set_coookie("access_token",access_token,response=response)
     set_coookie("refresh_token",refresh_token,response=response)
-    print(type(user))
     set_lastlogin_time(db=db,username=user.username)
     return "login successfully"
     
