@@ -1,6 +1,6 @@
 from fastapi import HTTPException,status,Depends,Cookie
 from sqlalchemy.orm import Session
-from sqlalchemy import exists,or_,and_
+from sqlalchemy import exists,or_,and_,update,func
 from .models import UserModel
 from pydantic import EmailStr
 from fastapi.security import APIKeyCookie
@@ -112,3 +112,15 @@ def get_current_user(
             detail="Invalid access token",
         )
     return user
+
+def set_lastlogin_time(db:Session,username):
+    db.execute(
+        update(
+            UserModel
+        ).where(
+            UserModel.username == username
+        ).values(
+            last_login = func.now()
+        )
+    )
+    db.commit()

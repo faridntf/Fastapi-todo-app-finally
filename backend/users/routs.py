@@ -27,7 +27,7 @@ from .models import UserModel,EnUserRole
 from core import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from .services import check_duplicate_account,find_user,get_current_user,find_user_by_id
+from .services import check_duplicate_account,find_user,get_current_user,find_user_by_id,set_lastlogin_time
 
 #sqlalchemy.exc.IntegrityError
 
@@ -82,6 +82,8 @@ def login_account(response: Response,login_data: OAuth2PasswordRequestForm = Dep
     refresh_token = create_refresh_token(user.id)
     set_coookie("access_token",access_token,response=response)
     set_coookie("refresh_token",refresh_token,response=response)
+    print(type(user))
+    set_lastlogin_time(db=db,username=user.username)
     return "login successfully"
     
 @router.post("/logout")

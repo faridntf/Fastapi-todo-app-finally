@@ -86,7 +86,7 @@ class UserModel(Base):
     
     role: Mapped[EnUserRole] = mapped_column(
         SqlEnum(EnUserRole),
-        default=EnUserRole.USER,
+        default=EnUserRole.GUEST,
         nullable=False,
     )
     
