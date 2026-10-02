@@ -92,7 +92,7 @@ def get_all_users_tasks(
     db: Session = Depends(get_db),
     current_user: UserModel = Depends(get_current_user)
 ):
-    if current_user.role==EnUserRole.GUEST and current_user.role == EnUserRole.USER:
+    if current_user.role==EnUserRole.GUEST or current_user.role == EnUserRole.USER:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Oooops!!!!, just admin users access the section"
