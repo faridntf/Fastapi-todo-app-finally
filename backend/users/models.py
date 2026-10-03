@@ -59,7 +59,8 @@ class UserModel(Base):
     email : Mapped[str] = mapped_column(
         String(250),
         nullable=False,
-        index=True
+        index=True,
+        unique=True
     )
     
     password : Mapped[str] = mapped_column(
@@ -70,7 +71,8 @@ class UserModel(Base):
     phone_number: Mapped[str] = mapped_column(
         String(20),
         nullable=True,
-        index=True
+        index=True,
+        unique=True
     )
     
     created_at : Mapped[date] = mapped_column(

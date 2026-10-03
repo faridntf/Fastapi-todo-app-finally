@@ -62,8 +62,8 @@ def new_profile(data: ProfileCreateSc,db: Session = Depends(get_db), login_user 
     try:
         db.flush()
         db.add(create_profile)
-        db.commit()
         change_profile_status(user_id=login_user.id,is_completed=True,db=db,)
+        db.commit()
         raise HTTPException(status_code=status.HTTP_200_OK,detail="create profile successfully")
     except IntegrityError as e:
         raise HTTPException(
@@ -173,7 +173,7 @@ def delete_profile_avatar(
             detail="Could not delete avatar",
         )
     delete_old_profile_avatar(old_data=old_avatar)
-    return HTTPException(status_code=status.HTTP_204_NO_CONTENT)
+    raise HTTPException(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/profile-detail",response_model=ProfileResponseSc,)
