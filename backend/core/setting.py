@@ -11,6 +11,9 @@ class Setting(BaseSettings):
     REFRESH_TOKEN_SECRET_KEY : str
     REFRESH_TOKEN_EXPIRE_MINUTES: int
     ALGORITHM: str
+    
+    SAMESITE_SETTING: str
+    SECURE_SETTING : bool
 
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",

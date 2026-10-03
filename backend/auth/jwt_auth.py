@@ -70,7 +70,7 @@ def set_coookie(token_type:str, my_token: str, response: Response)-> None:
             key=token_type,
             value=my_token,
             httponly=True,
-            secure=False, #todo => to production hatmn avaz beshe
+            secure=False, 
             samesite="lax",
             max_age= setting.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
             path="/"
@@ -80,8 +80,8 @@ def set_coookie(token_type:str, my_token: str, response: Response)-> None:
                 key=token_type,
                 value=my_token,
                 httponly=True,
-                secure=False, #todo => to production hatmn avaz beshe
-                samesite="lax",
-                max_age= setting.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+                secure=setting.SECURE_SETTING,
+                samesite=setting.SAMESITE_SETTING,
+                max_age= setting.REFRESH_TOKEN_EXPIRE_MINUTES * 60,
                 path="/"
             )
