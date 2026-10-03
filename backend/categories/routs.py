@@ -107,13 +107,13 @@ def change_detail_category(
 
 @router.delete("/category-id")
 def delete_category_by_id(
-    cat_id:int, db:Session = Depends(get_db), current_user : UserModel = Depends(get_current_user)):
-    if not current_user.role == EnUserRole.ADMIN or current_user.role == EnUserRole.SUPER_ADMIN:
+    cat_id:int,
+    db:Session = Depends(get_db),
+    current_user : UserModel = Depends(get_current_user)
+):
+    if current_user.role == EnUserRole.ADMIN or current_user.role == EnUserRole.SUPER_ADMIN:
         category = find_category_by_id(db=db,cat_id=cat_id)
-        for task in category.tasks:
-            task.category_id_fk == 1
-        db.flush(task)
-        print(task.category_id_fk)  # => id hamun task ro baraye mn mide = 8,     != 1
+        
         if not category:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -124,11 +124,17 @@ def delete_category_by_id(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="It is not possible to delete the default categories."
             )
+        for task in category.tasks:
+            task.category_id_fk = 1
+        db.commit()
         db.delete(category)
         db.commit()
         raise HTTPException(status_code=status.HTTP_204_NO_CONTENT)
     else:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="guest and users members cannot access")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="guest and users members cannot access"
+        )
 
 
 @router.delete("/category-name")
@@ -146,7 +152,14 @@ def delete_category_by_name(
                 detail="No category has been created."
             )
         if category.name == "Uncategorized":
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT,detail="this category cannot be delete")
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="this category cannot be delete"
+            )
+        
+        for task in category.tasks:
+            task.category_id_fk = 1
+        db.commit()
         db.delete(category)
         db.commit()
         raise HTTPException(status_code=status.HTTP_204_NO_CONTENT)
