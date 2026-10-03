@@ -49,8 +49,7 @@ app = FastAPI(lifespan=lifespan,
               docs_url=None,
               swagger_ui_oauth2_redirect_url=None
               )
-patch_fastapi(app,docs_url="/swagger")
-
+# patch_fastapi(app,docs_url="/swagger")
 
 #included routs app
 
@@ -58,3 +57,6 @@ app.include_router(user_router)
 app.include_router(task_router)
 app.include_router(category_router)
 app.include_router(profile_router)
+
+#serv frontend pages
+app.frontend("/",directory="templates/",fallback="404.html")
