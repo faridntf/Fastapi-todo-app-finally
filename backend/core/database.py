@@ -9,8 +9,8 @@ engine = create_engine(setting.SQLALCHEMY_POSTGRES_DATABASE_URL)
 class Base(DeclarativeBase):
     pass
 
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def get_db():
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
     try:
         yield db

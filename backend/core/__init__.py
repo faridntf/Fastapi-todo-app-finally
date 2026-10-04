@@ -1,6 +1,7 @@
 from .database import(
     Base,
-    get_db
+    get_db,
+    SessionLocal
 )
 
 from .setting import setting
