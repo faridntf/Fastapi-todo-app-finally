@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from fastapi_swagger import patch_fastapi
+from fastapi.middleware.gzip import GZipMiddleware
 
 from users import user_router
 from tasks import task_router
@@ -50,6 +51,11 @@ app = FastAPI(lifespan=lifespan,
               swagger_ui_oauth2_redirect_url=None
               )
 patch_fastapi(app,docs_url="/swagger")
+
+
+
+# Enable Gzip to compress responses larger than 1000 bytes
+app.add_middleware(GZipMiddleware,minimum_size=1024)
 
 
 #included routs app
